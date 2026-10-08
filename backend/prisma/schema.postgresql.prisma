@@ -1,0 +1,182 @@
+// Prisma Schema (PostgreSQL for Docker & Production)
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String      @id @default(uuid())
+  email        String      @unique
+  passwordHash String
+  fullName     String
+  avatar       String?
+  role         String      @default("USER") // USER or ADMIN
+  isVerified   Boolean     @default(false)
+  otpCode      String?
+  otpExpiresAt DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  preference   Preference?
+  trips        Trip[]
+  reviews      Review[]
+  wishlists    Wishlist[]
+}
+
+model Preference {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  budget       Float    @default(20000)
+  durationDays Int      @default(4)
+  travelType   String   @default("FRIENDS") // SOLO, COUPLE, FAMILY, FRIENDS
+  interests    String   @default("[\"Nature\",\"Adventure\"]") // JSON array string
+  updatedAt    DateTime @updatedAt
+}
+
+model Destination {
+  id               String       @id @default(uuid())
+  name             String
+  slug             String       @unique
+  state            String
+  country          String       @default("India")
+  description      String
+  heroImage        String
+  images           String       // JSON array
+  bestTimeToVisit  String
+  averageBudget    Float        // e.g. 8000
+  rating           Float        @default(4.5)
+  reviewCount      Int          @default(0)
+  latitude         Float
+  longitude        Float
+  categories       String       // JSON array
+  idealTravelTypes String       // JSON array: ["FRIENDS", "COUPLE", "FAMILY", "SOLO"]
+  weatherTemp      Float        @default(24)
+  weatherCondition String       @default("Partly Cloudy")
+  weatherHumidity  Int          @default(65)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  places           Place[]
+  hotels           Hotel[]
+  restaurants      Restaurant[]
+  reviews          Review[]
+  trips            Trip[]
+  wishlists        Wishlist[]
+}
+
+model Place {
+  id                 String      @id @default(uuid())
+  destinationId      String
+  destination        Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  name               String
+  description        String
+  image              String
+  category           String      // Nature, Adventure, Historical, Religious, Beach, Shopping
+  visitDurationHours Float       @default(2.0)
+  entryFee           Float       @default(0)
+  bestTimeOfDay      String      @default("MORNING") // MORNING, AFTERNOON, EVENING
+  latitude           Float
+  longitude          Float
+  rating             Float       @default(4.5)
+}
+
+model Hotel {
+  id            String      @id @default(uuid())
+  destinationId String
+  destination   Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  name          String
+  image         String
+  pricePerNight Float
+  rating        Float       @default(4.3)
+  address       String
+  amenities     String      // JSON array
+  latitude      Float
+  longitude     Float
+}
+
+model Restaurant {
+  id            String      @id @default(uuid())
+  destinationId String
+  destination   Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  name          String
+  image         String
+  cuisine       String
+  priceRange    String      @default("₹₹")
+  rating        Float       @default(4.4)
+  popularDishes String      // JSON array
+  latitude      Float
+  longitude     Float
+}
+
+model Trip {
+  id                 String        @id @default(uuid())
+  userId             String
+  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  destinationId      String
+  destination        Destination   @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  title              String
+  durationDays       Int           @default(4)
+  travelType         String        @default("FRIENDS")
+  userBudget         Float         @default(20000)
+  estimatedCost      Float         @default(17000)
+  transportCost      Float         @default(5000)
+  hotelCost          Float         @default(6000)
+  foodCost           Float         @default(3000)
+  activityCost       Float         @default(2000)
+  ticketsCost        Float         @default(1000)
+  status             String        @default("PLANNED") // PLANNED, ACTIVE, COMPLETED
+  startDate          DateTime?
+  endDate            DateTime?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  days               TripDay[]
+}
+
+model TripDay {
+  id         String         @id @default(uuid())
+  tripId     String
+  trip       Trip           @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  dayNumber  Int
+
+  activities TripActivity[]
+}
+
+model TripActivity {
+  id            String   @id @default(uuid())
+  tripDayId     String
+  tripDay       TripDay  @relation(fields: [tripDayId], references: [id], onDelete: Cascade)
+  placeId       String?
+  timeSlot      String   // MORNING, AFTERNOON, EVENING
+  activityTitle String
+  description   String?
+  estimatedCost Float    @default(0)
+  orderIndex    Int      @default(0)
+}
+
+model Review {
+  id            String      @id @default(uuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  destinationId String
+  destination   Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  rating        Int
+  comment       String
+  createdAt     DateTime    @default(now())
+}
+
+model Wishlist {
+  id            String      @id @default(uuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  destinationId String
+  destination   Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+
+  @@unique([userId, destinationId])
+}
