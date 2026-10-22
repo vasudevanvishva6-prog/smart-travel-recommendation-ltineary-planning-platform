@@ -111,3 +111,10 @@ export const adminApi = {
   addRestaurant: (data: any) => api.post('/admin/restaurants', data),
   deleteReview: (id: string) => api.delete(`/admin/reviews/${id}`),
 };
+
+// Live Explore (any place in India)
+export const exploreApi = {
+  search: (q: string) => api.get('/explore/search', { params: { q } }),
+  nearby: (lat: number, lon: number, name: string, radius = 10) =>
+    api.get('/explore/nearby', { params: { lat, lon, name, radius } }),
+};

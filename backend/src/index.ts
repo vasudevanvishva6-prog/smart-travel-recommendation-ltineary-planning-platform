@@ -1,3 +1,10 @@
+import dns from 'node:dns';
+try {
+  dns.setDefaultResultOrder('ipv4first');
+} catch (_e) {
+  // ignore
+}
+
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';

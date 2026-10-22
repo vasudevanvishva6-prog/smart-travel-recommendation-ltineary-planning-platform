@@ -92,7 +92,7 @@ export class DestinationController {
       return;
     }
 
-    const weather = await WeatherService.getWeather(destination.name, 4);
+    const weather = await WeatherService.getWeather(destination.name, 4, destination.latitude, destination.longitude);
 
     const formatted = {
       ...destination,
@@ -136,7 +136,7 @@ export class DestinationController {
       return;
     }
 
-    const weather = await WeatherService.getWeather(destination.name, 4);
+    const weather = await WeatherService.getWeather(destination.name, 4, destination.latitude, destination.longitude);
 
     const formatted = {
       ...destination,

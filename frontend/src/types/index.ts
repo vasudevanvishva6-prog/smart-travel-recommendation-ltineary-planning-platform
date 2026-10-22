@@ -242,3 +242,64 @@ export interface WishlistItem {
   destinationId: string;
   destination: Destination;
 }
+
+// ---- Live explore (OpenStreetMap / Open-Meteo / Wikipedia) ----
+export interface GeoPlace {
+  name: string;
+  displayName: string;
+  state: string;
+  country: string;
+  latitude: number;
+  longitude: number;
+  type: string;
+}
+
+export interface LivePoi {
+  id: string;
+  kind: 'attraction' | 'food' | 'stay';
+  name: string;
+  subtype: string;
+  latitude: number;
+  longitude: number;
+  distanceKm: number;
+  address?: string;
+  cuisine?: string;
+  phone?: string;
+  website?: string;
+  openingHours?: string;
+  stars?: string;
+  fee?: string;
+  vegetarian?: string;
+  wikipedia?: string;
+  mapsUrl: string;
+}
+
+export interface LiveWeather {
+  temperature: number;
+  feelsLike: number;
+  humidity: number;
+  windSpeedKmH: number;
+  condition: string;
+  isDay: boolean;
+  rainProbability: number;
+  updatedAt: string;
+  forecast: Array<{
+    date: string;
+    tempMax: number;
+    tempMin: number;
+    rainProbability: number;
+    condition: string;
+  }>;
+}
+
+export interface ExploreResult {
+  success: boolean;
+  center: { latitude: number; longitude: number; radiusKm: number };
+  attractions: LivePoi[];
+  food: LivePoi[];
+  stays: LivePoi[];
+  weather: LiveWeather | null;
+  summary: { title: string; extract: string; image?: string; url?: string } | null;
+  fetchedAt: string;
+  sources: string[];
+}

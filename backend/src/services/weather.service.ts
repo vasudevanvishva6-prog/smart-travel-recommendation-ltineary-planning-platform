@@ -1,4 +1,5 @@
 import { cacheService } from '../config/redis';
+import { getLiveWeather } from './live.service';
 
 export interface WeatherInfo {
   temperature: number;
@@ -17,7 +18,43 @@ export interface WeatherInfo {
 }
 
 export class WeatherService {
-  static async getWeather(destinationName: string, durationDays = 4): Promise<WeatherInfo> {
+  static async getWeather(
+    destinationName: string,
+    durationDays = 4,
+    latitude?: number,
+    longitude?: number
+  ): Promise<WeatherInfo> {
+    // Prefer real live data (Open-Meteo) whenever coordinates are known
+    if (latitude != null && longitude != null) {
+      try {
+        const live = await getLiveWeather(latitude, longitude);
+        return {
+          temperature: live.temperature,
+          condition: live.condition,
+          humidity: live.humidity,
+          windSpeedKmH: live.windSpeedKmH,
+          rainProbability: live.rainProbability,
+          feelsLike: live.feelsLike,
+          forecast: live.forecast.slice(0, durationDays).map((f, i) => ({
+            dayNumber: i + 1,
+            tempDay: f.tempMax,
+            tempNight: f.tempMin,
+            condition: f.condition,
+            advice:
+              f.rainProbability >= 60
+                ? 'Rain likely - plan indoor spots, museums and cafes.'
+                : f.tempMax >= 33
+                ? 'Hot day - stay hydrated and visit outdoor spots early morning or evening.'
+                : f.tempMax <= 15
+                ? 'Cool weather - carry a jacket for mornings and evenings.'
+                : 'Good weather for outdoor sightseeing and photography.',
+          })),
+        };
+      } catch (_e) {
+        // network problem -> fall through to the estimated offline values below
+      }
+    }
+
     const cacheKey = `weather:${destinationName.toLowerCase()}:${durationDays}`;
     const cached = await cacheService.get(cacheKey);
 

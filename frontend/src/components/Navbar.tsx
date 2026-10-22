@@ -10,6 +10,7 @@ import {
   Shield,
   Menu,
   X,
+  MapPin,
   Sparkles,
   Search,
 } from 'lucide-react';
@@ -23,7 +24,7 @@ export const Navbar: React.FC = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/destinations?search=${encodeURIComponent(searchQuery.trim())}`);
+      navigate(`/explore?q=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery('');
     }
   };
@@ -69,6 +70,13 @@ export const Navbar: React.FC = () => {
             >
               <Sparkles className="w-4 h-4 text-brand-600 animate-pulse" />
               Smart Recommendations
+            </Link>
+            <Link
+              to="/explore"
+              className="flex items-center gap-1.5 text-sm font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-full border border-emerald-200 transition-colors"
+            >
+              <MapPin className="w-4 h-4" />
+              Live Explore
             </Link>
             <Link
               to="/destinations"

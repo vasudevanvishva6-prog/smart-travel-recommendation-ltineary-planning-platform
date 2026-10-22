@@ -51,7 +51,7 @@ export const HomePage: React.FC = () => {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/destinations?search=${encodeURIComponent(searchQuery.trim())}`);
+      navigate(`/explore?q=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
 
@@ -97,7 +97,7 @@ export const HomePage: React.FC = () => {
                 <Search className="w-5 h-5 text-brand-600 shrink-0" />
                 <input
                   type="text"
-                  placeholder="Where do you want to travel? (e.g. Kerala, Goa, Ooty...)"
+                  placeholder="Search any place in India (e.g. Hogenakkal, Madurai, Kasol...)"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full text-sm sm:text-base outline-none bg-transparent placeholder-slate-400 font-medium"

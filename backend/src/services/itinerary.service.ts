@@ -83,7 +83,7 @@ export class ItineraryService {
       throw new Error('Destination not found');
     }
 
-    const weatherInfo = await WeatherService.getWeather(destination.name, durationDays);
+    const weatherInfo = await WeatherService.getWeather(destination.name, durationDays, destination.latitude, destination.longitude);
 
     // Group places by time of day
     const morningPlaces = destination.places.filter((p) => p.bestTimeOfDay === 'MORNING');

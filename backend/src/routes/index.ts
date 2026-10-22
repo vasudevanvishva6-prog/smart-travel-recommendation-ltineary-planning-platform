@@ -8,6 +8,7 @@ import restaurantRoutes from './restaurant.routes';
 import reviewRoutes from './review.routes';
 import wishlistRoutes from './wishlist.routes';
 import adminRoutes from './admin.routes';
+import exploreRoutes from './explore.routes';
 
 const router = Router();
 
@@ -20,6 +21,7 @@ router.use('/restaurants', restaurantRoutes);
 router.use('/reviews', reviewRoutes);
 router.use('/wishlist', wishlistRoutes);
 router.use('/admin', adminRoutes);
+router.use('/explore', exploreRoutes);
 
 // Health check
 router.get('/health', (_req, res) => {
